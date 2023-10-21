@@ -6,16 +6,7 @@ main() => runApp(PerguntaApp());
 
 class _PerguntaAppState extends State<PerguntaApp> {
   var _perguntaSelecionada = 0;
-  
-
-  void _responder() {
-    setState(() {
-      _perguntaSelecionada++;
-    });
-  }
-
-  Widget build(BuildContext context) {
-    final List<Map<String, Object>> perguntas = [
+  final  List<Map<String, Object>> _perguntas = [
       {
         'texto': 'Qual é a sua cor favorita?',
         'respostas': ['Preto', 'Vermelho', 'Verde', 'Branco'],
@@ -29,7 +20,21 @@ class _PerguntaAppState extends State<PerguntaApp> {
         'respostas': ['Maria', 'João', 'Leo', 'Pedro'],
       },
     ];
-    List<String> respostas = perguntas[_perguntaSelecionada].cast()['respostas'];
+  
+
+  void _responder() {
+    setState(() {
+      _perguntaSelecionada++;
+    });
+  }
+
+  bool get temPerguntaSelecionada {
+    return _perguntaSelecionada < _perguntas.length;
+  }
+
+  Widget build(BuildContext context) {
+    
+    List<String> respostas = temPerguntaSelecionada? _perguntas[_perguntaSelecionada].cast()['respostas']: [];
   List<Widget> widgets = respostas.map((t) => Resposta(t, _responder)).toList();
 
     //for(var textoResp in respostas){
@@ -37,23 +42,22 @@ class _PerguntaAppState extends State<PerguntaApp> {
     //}
 
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Perguntas'),
-        ),
-        body: Column(
-          children: [
-            Column(
-              children: <Widget>[
-                Questao(perguntas[_perguntaSelecionada]['texto'].toString()),
-                ...respostas.map((t) => Resposta(t, _responder)).toList(),
-                
-              ],
-            )
-          ],
-        ),
-      ),
-    );
+  home: Scaffold(
+    appBar: AppBar(
+      title: Text('Perguntas'),
+    ),
+    body: temPerguntaSelecionada
+        ? Column(
+            children: <Widget>[
+              Questao(_perguntas[_perguntaSelecionada]['texto'].toString()),
+              ...respostas.map((t) => Resposta(t, _responder)).toList(),
+            ],
+          )
+        : Center(
+            child: Text("Não há mais perguntas."),
+          ),
+  ),
+);
   }
 }
 
